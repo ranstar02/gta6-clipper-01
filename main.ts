@@ -1,55 +1,78 @@
-// gta6-clipper-01 entry — "Lucia & Jason in 37 Seconds".
-// Node 22+, standard library only. Written fresh in this session
-// (main-chat coordinator session, 20 Nov 2026, user prompt
-// "Gas submit gta clipper").
+// Lucia & Jason in 37 Seconds — entry for the gta6-clipper-01 bounty.
+// A 37-second vertical Short cut from GTA VI Trailer 2: the hook is ten
+// fast moments of Lucia and Jason around Vice City, then the VI logo,
+// then a closing card that points viewers at make.fun, where clips like
+// this one earn money. The Short itself lives on YouTube; this program
+// only hands its address to the grader.
 //
-// The entry itself is the YouTube Short: a 37-second vertical cut of
-// GTA VI Trailer 2 (Lucia and Jason's best moments first, then
-// make.fun's pitch on screen — "Make clips like this with AI and
-// earn money on make.fun"). The clip was re-rendered with ffmpeg in
-// this session from the same trailer source and filter (frames
-// pixel-identical to the clip already uploaded as a public Short),
-// and its address is recorded in VIDEO.json.
-//
-// This program does the one thing the gate asks of it: it carries
-// VIDEO.json from the repository into the output directory, where the
-// house reads it and then reads the video's views through the
-// YouTube Data API. It scores nothing itself and writes nothing
-// about the video.
-//
-// Run it the way the kit documents:
-//   mkdir -p out && MAKEFUN_BOT_DIR=. MAKEFUN_OUTPUT_DIR=out node main.ts
-// Inside the grader the defaults /bot and /output apply instead.
+// How it runs: the grader calls this file with node and reads VIDEO.json
+// out of the output directory, then looks the video up through the
+// YouTube Data API and counts its views. Nothing here scores anything,
+// fetches anything, or writes anything about the video itself.
 
 import { copyFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const BOT_DIR = process.env.MAKEFUN_BOT_DIR ?? '/bot';
-const OUTPUT_DIR = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
-const FILENAME = 'VIDEO.json';
+const VIDEO_FILE = 'VIDEO.json';
 
-const source = join(BOT_DIR, FILENAME);
-const target = join(OUTPUT_DIR, FILENAME);
-
-// Read first so a broken VIDEO.json fails loudly instead of silently
-// copying garbage into /output.
-const video = JSON.parse(readFileSync(source, 'utf8'));
-if (typeof video !== 'object' || video === null || typeof video.url !== 'string') {
-  console.error(`${FILENAME} must be a JSON object with a string "url" field.`);
-  process.exit(1);
+function directories() {
+  return {
+    from: process.env.MAKEFUN_BOT_DIR ?? '/bot',
+    to: process.env.MAKEFUN_OUTPUT_DIR ?? '/output',
+  };
 }
 
-// The gate only accepts a real YouTube video address, so refuse a
-// VIDEO.json whose url is not shaped like one instead of copying it
-// through and scoring an invalid entry.
-const YOUTUBE_URL = /^https:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:shorts\/|watch\?v=)|youtu\.be\/)([A-Za-z0-9_-]{11})/;
-const match = YOUTUBE_URL.exec(video.url);
-if (!match) {
-  console.error(`VIDEO.json "url" is not a YouTube video address: ${video.url}`);
-  process.exit(1);
+function loadAddress() {
+  const { from } = directories();
+  const raw = readFileSync(join(from, VIDEO_FILE), 'utf8');
+  const parsed = JSON.parse(raw);
+  if (!parsed || typeof parsed !== 'object') {
+    throw new Error(`${VIDEO_FILE} is not a JSON object`);
+  }
+  const address = parsed.url;
+  if (typeof address !== 'string' || address.length === 0) {
+    throw new Error(`${VIDEO_FILE} has no url string`);
+  }
+  return address;
 }
-const videoId = match[1];
 
-mkdirSync(OUTPUT_DIR, { recursive: true });
-copyFileSync(source, target);
-console.log(`Wrote ${target} -> ${video.url} (video ${videoId})`);
+function extractId(address) {
+  let parsed;
+  try {
+    parsed = new URL(address);
+  } catch {
+    return null;
+  }
+  const host = parsed.hostname.replace(/^www\./, '');
+  const path = parsed.pathname;
+  if (host === 'youtu.be') {
+    const id = path.slice(1).split('/')[0];
+    return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : null;
+  }
+  if (host === 'youtube.com' || host === 'm.youtube.com') {
+    if (path.startsWith('/shorts/')) {
+      const id = path.slice('/shorts/'.length).split('/')[0];
+      return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : null;
+    }
+    if (path === '/watch') {
+      const id = parsed.searchParams.get('v') ?? '';
+      return /^[A-Za-z0-9_-]{11}$/.test(id) ? id : null;
+    }
+  }
+  return null;
+}
+
+function publish() {
+  const address = loadAddress();
+  const id = extractId(address);
+  if (id === null) {
+    console.error(`Not a YouTube video address: ${address}`);
+    process.exit(1);
+  }
+  const { from, to } = directories();
+  mkdirSync(to, { recursive: true });
+  copyFileSync(join(from, VIDEO_FILE), join(to, VIDEO_FILE));
+  console.log(`Published ${VIDEO_FILE} for video ${id}: ${address}`);
+}
+
+publish();
