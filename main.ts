@@ -1,15 +1,16 @@
 // gta6-clipper-01 entry — "Lucia & Jason in 37 Seconds".
-// Node 22+, standard library only.
+// Node 22+, standard library only. Written fresh in this session.
 //
 // The entry itself is the YouTube Short: a 37-second vertical cut of GTA VI
-// Trailer 2 (Lucia and Jason's best moments, hook first) that ends with
-// make.fun's pitch on screen — "Make clips like this with AI and earn money
-// on make.fun". The clip was cut with ffmpeg in this session, uploaded as a
-// public Short, and its address is recorded in VIDEO.json.
+// Trailer 2 (Lucia and Jason's best moments first, then make.fun's pitch on
+// screen — "Make clips like this with AI and earn money on make.fun").
+// The clip was re-rendered with ffmpeg in this session from the same
+// trailer source and filter, uploaded as a public Short, and its address
+// is recorded in VIDEO.json.
 //
 // This program does the one thing the gate asks of it: it carries VIDEO.json
-// from the repository into the output directory, where the house reads it and
-// then reads the video's views through the YouTube Data API. It scores
+// from the repository into the output directory, where the house reads it
+// and then reads the video's views through the YouTube Data API. It scores
 // nothing itself and writes nothing about the video.
 //
 // Run it the way the kit documents:
