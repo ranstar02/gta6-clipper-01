@@ -46,7 +46,7 @@ if (!match) {
   console.error(`VIDEO.json "url" is not a YouTube video address: ${video.url}`);
   process.exit(1);
 }
-const videoId = match[3];
+const videoId = match[4];
 
 mkdirSync(OUTPUT_DIR, { recursive: true });
 copyFileSync(source, target);
