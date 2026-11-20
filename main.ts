@@ -38,13 +38,16 @@ if (typeof video !== 'object' || video === null || typeof video.url !== 'string'
 
 // The gate only accepts a real YouTube video address, so refuse a VIDEO.json
 // whose url is not shaped like one instead of copying it through and
-// scoring an invalid entry.
-const YOUTUBE_URL = /^https:\/\/(www\.|m\.)?(youtube\.com\/(shorts\/|watch\?v=)|youtu\.be\/)[A-Za-z0-9_-]{11}/;
-if (!YOUTUBE_URL.test(video.url)) {
+// scoring an invalid entry. Parse it too: the video id is the part the
+// house grades on, so log it and refuse an address whose id is missing.
+const YOUTUBE_URL = /^https:\/\/(www\.|m\.)?(youtube\.com\/(shorts\/|watch\?v=)|youtu\.be\/)([A-Za-z0-9_-]{11})/;
+const match = YOUTUBE_URL.exec(video.url);
+if (!match) {
   console.error(`VIDEO.json "url" is not a YouTube video address: ${video.url}`);
   process.exit(1);
 }
+const videoId = match[3];
 
 mkdirSync(OUTPUT_DIR, { recursive: true });
 copyFileSync(source, target);
-console.log(`Wrote ${target} -> ${video.url}`);
+console.log(`Wrote ${target} -> ${video.url} (video ${videoId})`);
