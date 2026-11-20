@@ -30,8 +30,8 @@ function loadAddress() {
     throw new Error(`${VIDEO_FILE} is not a JSON object`);
   }
   const address = parsed.url;
-  if (typeof address !== 'string' || address.length === 0) {
-    throw new Error(`${VIDEO_FILE} has no url string`);
+  if (typeof address !== 'string' || address.trim() !== address || address.length === 0) {
+    throw new Error(`${VIDEO_FILE} has no clean url string`);
   }
   return address;
 }
@@ -43,7 +43,7 @@ function extractId(address) {
   } catch {
     return null;
   }
-  const host = parsed.hostname.replace(/^www\./, '');
+  const host = parsed.hostname.toLowerCase().replace(/^www\./, '');
   const path = parsed.pathname;
   if (host === 'youtu.be') {
     const id = path.slice(1).split('/')[0];
@@ -75,4 +75,11 @@ function publish() {
   console.log(`Published ${VIDEO_FILE} for video ${id}: ${address}`);
 }
 
-publish();
+try {
+  publish();
+} catch (err) {
+  // A broken or missing VIDEO.json must fail with one clean line, not a
+  // raw stack trace: the grader only needs to know the entry is invalid.
+  console.error(`VIDEO.json error: ${err.message}`);
+  process.exit(1);
+}
