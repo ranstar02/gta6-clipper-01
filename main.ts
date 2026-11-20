@@ -1,5 +1,6 @@
 // gta6-clipper-01 entry — "Lucia & Jason in 37 Seconds".
-// Node 22+, standard library only. Written fresh in this session.
+// Node 22+, standard library only. Written fresh in this session
+// (WhatsApp chat, 20 Nov 2026, user prompt "GTA clipper submit").
 //
 // The entry itself is the YouTube Short: a 37-second vertical cut of GTA VI
 // Trailer 2 (Lucia and Jason's best moments first, then make.fun's pitch on
