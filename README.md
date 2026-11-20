@@ -1,6 +1,10 @@
 # Lucia & Jason in 37 Seconds
 
-A vertical Short for the make.fun gta6-clipper-01 bounty ($500, top 20 by
+[![make.fun · gta6-clipper-01](https://make.fun/badge/gta6-clipper-01.svg)](https://make.fun/bounty/gta6-clipper-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-clipper-01)
+[![rank](https://make.fun/badge/gta6-clipper-01/ranstar02/gta6-clipper-01/rank.svg)](https://make.fun/bounty/gta6-clipper-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-clipper-01)
+[![reward](https://make.fun/badge/gta6-clipper-01/ranstar02/gta6-clipper-01/reward.svg)](https://make.fun/bounty/gta6-clipper-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-clipper-01)
+
+A vertical Short for the [make.fun gta6-clipper-01 bounty](https://make.fun/bounty/gta6-clipper-01) ($500, top 20 by
 YouTube views). It opens with ten quick cuts from GTA VI Trailer 2 —
 Lucia walking out of prison, Jason and Lucia tearing through Vice City,
 the Ocean Drive cruise, the jetski, the exploding police car — then the
